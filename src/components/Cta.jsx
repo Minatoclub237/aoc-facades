@@ -1,13 +1,13 @@
 import { scrollTo } from '../smoothScroll'
 
-export const TELEPHONE = '06 66 47 13 89'
-export const TEL_LIEN = 'tel:+33666471389'
+export const TELEPHONE = '06 15 07 30 39'
+export const TEL_LIEN = 'tel:+33615073039'
 // À REMPLACER : adresse non fournie par le client.
 export const EMAIL = 'contact@aoc-facades.fr'
 
 /** Lien WhatsApp avec message pré-rempli : le visiteur n'a plus qu'à envoyer. */
 export const whatsapp = (message) =>
-  'https://wa.me/33666471389?text=' + encodeURIComponent(message)
+  'https://wa.me/33615073039?text=' + encodeURIComponent(message)
 
 const IconeWhatsapp = (props) => (
   <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true" {...props}>

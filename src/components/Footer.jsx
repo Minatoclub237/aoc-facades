@@ -1,6 +1,6 @@
 import { scrollTo } from '../smoothScroll'
 
-const TELEPHONE = '06 66 47 13 89'
+const TELEPHONE = '06 15 07 30 39'
 // À REMPLACER : adresse non fournie par le client.
 const EMAIL = 'contact@aoc-facades.fr'
 
@@ -115,8 +115,12 @@ export default function Footer() {
             <h2 className="font-sans uppercase tracking-[0.2em] text-[11px] text-or mt-8 mb-3">
               Horaires
             </h2>
-            <p className="font-sans text-white/40 text-sm italic">
-              Du lundi au vendredi — à compléter
+            <p className="font-sans text-white/60 text-sm leading-relaxed">
+              Du lundi au samedi
+              <br />
+              7 h — 19 h
+              <br />
+              <span className="text-white/40">Dimanche fermé</span>
             </p>
           </div>
         </div>

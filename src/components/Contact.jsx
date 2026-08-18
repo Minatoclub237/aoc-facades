@@ -5,7 +5,7 @@ import { whatsapp } from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const TELEPHONE = '06 66 47 13 89'
+const TELEPHONE = '06 15 07 30 39'
 // À REMPLACER : adresse de réception des demandes de devis (non fournie par le client).
 const EMAIL = 'contact@aoc-facades.fr'
 
@@ -213,8 +213,10 @@ export default function Contact() {
             </div>
             <div>
               <dt className="text-white/60 font-bold uppercase tracking-[0.2em] text-[11px] mb-2">Horaires</dt>
-              <dd className="text-white/40 leading-relaxed italic">
-                Du lundi au vendredi — à compléter
+              <dd className="text-white/85 font-medium leading-relaxed">
+                Du lundi au samedi, 7 h — 19 h
+                <br />
+                <span className="text-white/50">Dimanche fermé</span>
               </dd>
             </div>
           </dl>
