@@ -86,11 +86,23 @@ export default function GlassPanel() {
             <p className="font-serif italic text-white/70 text-base md:text-lg mb-4 md:mb-6">
               À propos
             </p>
-            <h2 className="font-serif text-white text-4xl md:text-6xl lg:text-[96px] leading-[1.1] lg:leading-[92.6px] tracking-tight w-full max-w-[1000px] mx-auto">
-              Nous transformons le béton fatigué en <span className="italic">façades</span> qui
-              respirent. Ravalement, <span className="italic">isolation</span> et enduits pensés
-              pour durer. Le grand <span className="italic">renouveau</span>
-            </h2>
+            <div className="font-serif text-white text-xl md:text-3xl lg:text-[40px] leading-[1.35] tracking-tight w-full max-w-[1000px] mx-auto space-y-5 md:space-y-7">
+              <p>
+                Depuis plusieurs années, AOC Façades met son <span className="italic">expertise</span>{' '}
+                au service de vos projets de rénovation extérieure. Nous accordons une importance
+                particulière à la qualité du travail, au respect des délais et à la satisfaction de
+                nos clients.
+              </p>
+              <p>
+                Chaque chantier est réalisé avec <span className="italic">soin</span>, qu’il s’agisse
+                d’une maison individuelle, d’un immeuble, d'un domaine viticole ou d’un bâtiment
+                ancien. Notre objectif est simple : vous offrir un résultat durable,{' '}
+                <span className="italic">d’exception</span> et à la hauteur de vos attentes.
+              </p>
+              <p className="text-white/70 text-lg md:text-xl lg:text-2xl">
+                Contactez-nous dès aujourd’hui pour une étude personnalisée et un devis gratuit.
+              </p>
+            </div>
           </div>
 
           <div className="border-t border-white/10 py-6 overflow-hidden">
