@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { whatsapp } from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -147,12 +148,24 @@ export default function Contact() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="contact-champ mt-12 font-sans uppercase tracking-[0.2em] text-sm border border-or text-or px-9 py-4 rounded-full transition-colors duration-500 hover:bg-or hover:text-fond"
-            >
-              Demander mon devis gratuit
-            </button>
+            <div className="mt-12 flex flex-wrap items-center gap-3">
+              <button
+                type="submit"
+                className="contact-champ font-sans uppercase tracking-[0.2em] text-sm bg-or text-fond font-semibold px-9 py-4 rounded-full transition-colors duration-500 hover:bg-or-clair"
+              >
+                Demander mon devis gratuit
+              </button>
+              <a
+                href={whatsapp(
+                  "Bonjour, je souhaite un devis pour ma façade. Adresse du chantier : ______",
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-champ font-sans uppercase tracking-[0.2em] text-sm border border-or/45 text-or px-9 py-4 rounded-full transition-colors duration-500 hover:bg-or hover:text-fond"
+              >
+                Ou sur WhatsApp
+              </a>
+            </div>
           </form>
         </div>
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Cta from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -235,10 +236,18 @@ export default function Metiers() {
         </div>
       </div>
 
-      <p className="relative md:absolute md:bottom-[8vh] left-0 w-full px-6 mt-12 md:mt-0 text-center font-sans text-white/45 text-xs md:text-sm">
-        Également : isolation thermique par l'extérieur (ITE), pose de plaques, plâtre et enduits
-        intérieurs.
-      </p>
+      <div className="relative md:absolute md:bottom-[6vh] left-0 w-full px-6 mt-12 md:mt-0 flex flex-col items-center gap-6">
+        <p className="text-center font-sans text-white/45 text-xs md:text-sm">
+          Également : isolation thermique par l'extérieur (ITE), pose de plaques, plâtre et enduits
+          intérieurs.
+        </p>
+        <Cta
+          label="Quel traitement pour mon mur ?"
+          href="#contact"
+          messageWhatsapp="Bonjour, j'aimerais savoir quelle prestation correspond à ma façade. Voici quelques photos de mon mur :"
+          labelWhatsapp="Envoyer une photo du mur"
+        />
+      </div>
     </section>
   )
 }

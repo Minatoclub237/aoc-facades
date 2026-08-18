@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Cta from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -139,6 +140,15 @@ export default function Chantiers() {
           </article>
         ))}
       </div>
+
+      {/* Le CTA reste posé pendant que les panneaux défilent derrière lui. */}
+      <Cta
+        className="absolute bottom-[8vh] left-0 w-full px-8 md:px-24 z-20"
+        label="Mon bâtiment est-il concerné ?"
+        href="#contact"
+        messageWhatsapp="Bonjour, mon bâtiment est un(e) ______ à ______. Est-ce que vous intervenez sur ce type de chantier ?"
+        labelWhatsapp="Décrire mon bâtiment"
+      />
 
       <div className="absolute top-[10vh] left-0 w-full px-8 md:px-24 z-20 pointer-events-none">
         <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-3">

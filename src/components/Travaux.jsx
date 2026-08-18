@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Cta from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -187,6 +188,14 @@ export default function Travaux() {
           </article>
         ))}
       </div>
+
+      <Cta
+        className="max-w-[1000px] mx-auto mt-20 justify-center md:justify-start"
+        label="Voir ce que ça donnerait chez moi"
+        href="#contact"
+        messageWhatsapp="Bonjour, j'ai vu vos avant / après. Voici une photo de mon mur, qu'est-ce que ça donnerait ?"
+        labelWhatsapp="Envoyer mon mur en photo"
+      />
     </section>
   )
 }

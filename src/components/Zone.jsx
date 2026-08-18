@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Cta from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -184,6 +185,14 @@ export default function Zone() {
               </li>
             ))}
           </ul>
+
+          <Cta
+            className="mt-10"
+            label="Ma commune n’est pas dans la liste"
+            href="#contact"
+            messageWhatsapp="Bonjour, j'habite à ______. Est-ce que vous intervenez dans ma commune ?"
+            labelWhatsapp="Vérifier ma commune"
+          />
         </div>
 
         <div className="relative pb-[22%]" style={{ perspective: '1200px' }}>
