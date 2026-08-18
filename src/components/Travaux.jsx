@@ -6,6 +6,14 @@ gsap.registerPlugin(ScrollTrigger)
 
 const TRAVAUX = [
   {
+    id: 'ravalement',
+    titre: 'Ravalement de façade',
+    texte:
+      "Nettoyage du support, reprise des fissures, enduit de finition : la même maison, trois semaines plus tard. Les encadrements sont soulignés, le soubassement repris.",
+    avant: '/facade-avant.webp',
+    apres: '/facade-apres.webp',
+  },
+  {
     id: 'ite',
     titre: 'Isolation thermique par l’extérieur',
     texte:
@@ -120,14 +128,14 @@ export default function Travaux() {
       id="travaux"
       ref={sectionRef}
       className="relative px-4 md:px-12 py-[12vh]"
-      aria-label="Isolation et travaux intérieurs, avant / après"
+      aria-label="Travaux avant / après"
     >
       <div className="max-w-[1000px] mx-auto mb-14 md:mb-20">
         <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-3">
           Avant / après
         </p>
         <h2 className="font-serif text-white text-3xl md:text-5xl lg:text-6xl leading-[1.05] mb-5">
-          Isolation, plaques et <span className="italic text-or">enduits intérieurs</span>
+          Ravalement, isolation et <span className="italic text-or">enduits intérieurs</span>
         </h2>
         <p className="font-sans text-white/55 text-base md:text-lg max-w-2xl leading-relaxed">
           La façade n'est qu'une partie du travail. Promenez le curseur sur chaque image — ou

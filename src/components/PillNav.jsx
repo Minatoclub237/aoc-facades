@@ -18,7 +18,7 @@ const NAV_ITEMS = [
     onClick: () => scrollTo(document.getElementById('hero').offsetHeight - window.innerHeight),
   },
   { label: 'Services', onClick: () => scrollTo('#metiers') },
-  { label: 'Réalisations', onClick: () => scrollTo('#realisations') },
+  { label: 'Réalisations', onClick: () => scrollTo('#travaux') },
   { label: 'Contact', onClick: () => scrollTo('#contact') },
 ]
 

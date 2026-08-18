@@ -4,7 +4,6 @@ import PillNav from './components/PillNav'
 import ScrollFloat from './components/ScrollFloat'
 import GlassPanel from './components/GlassPanel'
 import Metiers from './components/Metiers'
-import AvantApres from './components/AvantApres'
 import Travaux from './components/Travaux'
 import Chantiers from './components/Chantiers'
 import Zone from './components/Zone'
@@ -34,7 +33,6 @@ export default function App() {
           <div className="w-full bg-fond" style={{ height: 'calc(100% - 50vh)' }} />
         </div>
         <Metiers />
-        <AvantApres />
         <Travaux />
         <Chantiers />
         <Zone />
