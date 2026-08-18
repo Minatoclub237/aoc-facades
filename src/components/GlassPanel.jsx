@@ -5,6 +5,10 @@ import Cta from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Safari iOS ne tient pas un flou d'arrière-plan de 160 px : au-delà d'une
+// soixantaine de pixels, le compositeur rend la zone noire ou blanche.
+const flou = typeof window !== 'undefined' && window.matchMedia('(hover: none)').matches ? 40 : 160
+
 export default function GlassPanel() {
   const containerRef = useRef(null)
   const wrapperRef = useRef(null)
@@ -96,8 +100,8 @@ export default function GlassPanel() {
           className="w-full h-full flex flex-col justify-center rounded-3xl relative overflow-hidden"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.16)',
-            backdropFilter: 'blur(160px)',
-            WebkitBackdropFilter: 'blur(160px)',
+            backdropFilter: 'blur(' + flou + 'px)',
+            WebkitBackdropFilter: 'blur(' + flou + 'px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             transformStyle: 'preserve-3d',
             willChange: 'transform',

@@ -4,11 +4,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export default function ScrollVideo({ src, className = '' }) {
+export default function ScrollVideo({ src, srcMobile, poster, className = '' }) {
   const videoRef = useRef(null)
   const wrapperRef = useRef(null)
   const [progress, setProgress] = useState(0)
   const [ready, setReady] = useState(false)
+  // 14 Mo sur un réseau mobile, c'est un écran noir pendant une minute :
+  // les petits écrans reçoivent une version allégée.
+  const [source] = useState(() =>
+    srcMobile && window.matchMedia('(max-width: 900px)').matches ? srcMobile : src,
+  )
 
   // Chargement : on suit la progression du buffer pour l'overlay
   useEffect(() => {
@@ -25,11 +30,29 @@ export default function ScrollVideo({ src, className = '' }) {
       setReady(true)
     }
 
+    // iOS ne peint aucune image tant que la lecture n'a pas été amorcée : on la
+    // lance puis on la coupe aussitôt, sinon le fond reste noir jusqu'au premier
+    // geste du visiteur.
+    const amorcer = () => {
+      const lecture = video.play()
+      if (lecture && typeof lecture.then === 'function') {
+        lecture.then(() => video.pause()).catch(() => {})
+      }
+      setReady(true)
+    }
+
     video.addEventListener('progress', onProgress)
     video.addEventListener('canplay', onCanPlay)
+    video.addEventListener('loadeddata', amorcer)
+    // Filet de sécurité : jamais d'écran de chargement bloquant au-delà de 5 s,
+    // le poster prend le relais si la vidéo n'est pas prête.
+    const secours = setTimeout(() => setReady(true), 5000)
+
     return () => {
+      clearTimeout(secours)
       video.removeEventListener('progress', onProgress)
       video.removeEventListener('canplay', onCanPlay)
+      video.removeEventListener('loadeddata', amorcer)
     }
   }, [])
 
@@ -112,7 +135,8 @@ export default function ScrollVideo({ src, className = '' }) {
       >
         <video
           ref={videoRef}
-          src={src}
+          src={source}
+          poster={poster}
           muted
           playsInline
           preload="auto"

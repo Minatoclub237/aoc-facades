@@ -17,7 +17,7 @@ export default function App() {
 
   return (
     <>
-      <ScrollVideo src="/hero.mp4" />
+      <ScrollVideo src="/hero.mp4" srcMobile="/hero-mobile.mp4" poster="/hero-poster.webp" />
       <PillNav />
       <div id="hero" style={{ position: 'relative', height: '500vh' }}>
         <ScrollFloat>{`Toute La\nPuissance`}</ScrollFloat>
