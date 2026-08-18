@@ -10,24 +10,24 @@ const TRAVAUX = [
     titre: 'Isolation thermique par l’extérieur',
     texte:
       "Les panneaux isolants habillent le mur existant, puis disparaissent sous l’enduit de finition. Le bâtiment change de classe énergétique sans perdre un centimètre à l’intérieur.",
-    avant: '/placeholder-avant.svg',
-    apres: '/placeholder-apres.svg',
+    avant: '/travaux/ite-avant.webp',
+    apres: '/travaux/ite-apres.webp',
   },
   {
     id: 'plaques',
     titre: 'Pose de plaques',
     texte:
       "Ossature métallique, isolant, plaques vissées et joints bandés : le mur brut devient une surface parfaitement plane, prête à peindre.",
-    avant: '/placeholder-avant.svg',
-    apres: '/placeholder-apres.svg',
+    avant: '/travaux/plaques-avant.webp',
+    apres: '/travaux/plaques-apres.webp',
   },
   {
     id: 'enduits',
     titre: 'Plâtre et enduits intérieurs',
     texte:
       "Rebouchage, dressage, ponçage. Le plâtre rattrape les défauts du support et donne aux murs anciens la netteté d’un neuf.",
-    avant: '/placeholder-avant.svg',
-    apres: '/placeholder-apres.svg',
+    avant: '/travaux/enduits-avant.webp',
+    apres: '/travaux/enduits-apres.webp',
   },
 ]
 
@@ -152,14 +152,14 @@ export default function Travaux() {
                 src={travail.avant}
                 alt={'Avant : ' + travail.titre}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover object-left-top"
+                className="absolute inset-0 w-full h-full object-cover"
               />
               <div className="travaux-apres absolute inset-0" style={{ willChange: 'clip-path' }}>
                 <img
                   src={travail.apres}
                   alt={'Après : ' + travail.titre}
                   loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover object-left-top"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
 
