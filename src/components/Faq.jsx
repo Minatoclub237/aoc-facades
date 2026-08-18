@@ -29,6 +29,7 @@ const FAMILLES = [
             "Bonjour, j'ai un devis de ravalement d'une autre entreprise et j'aimerais le comparer avec vous. Je vous l'envoie ici.",
           ),
           externe: true,
+          vert: true,
         },
       },
       {
@@ -61,6 +62,7 @@ const FAMILLES = [
             "Bonjour, j'ai des fissures sur ma façade et j'aimerais votre avis. Je vous envoie une photo de près et une de loin.",
           ),
           externe: true,
+          vert: true,
         },
       },
       {
@@ -230,7 +232,12 @@ export default function Faq() {
                             }
                           : undefined
                       }
-                      className="inline-flex items-center gap-2 font-sans uppercase tracking-[0.18em] text-xs text-or border-b border-or/40 pb-1 mb-8 transition-colors duration-300 hover:border-or"
+                      className={
+                        'inline-flex items-center gap-2 font-sans uppercase tracking-[0.18em] text-xs border-b pb-1 mb-8 transition-colors duration-300 ' +
+                        (item.cta.vert
+                          ? 'text-whatsapp border-whatsapp/40 hover:border-whatsapp'
+                          : 'text-or border-or/40 hover:border-or')
+                      }
                     >
                       {item.cta.label} →
                     </a>

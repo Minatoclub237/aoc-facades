@@ -161,7 +161,7 @@ export default function Contact() {
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="contact-champ font-sans uppercase tracking-[0.2em] text-sm border border-or/45 text-or px-9 py-4 rounded-full transition-colors duration-500 hover:bg-or hover:text-fond"
+                className="contact-champ font-sans uppercase tracking-[0.2em] text-sm border border-whatsapp/60 text-whatsapp px-9 py-4 rounded-full transition-colors duration-500 hover:bg-whatsapp hover:text-fond"
               >
                 Ou sur WhatsApp
               </a>

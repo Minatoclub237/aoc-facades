@@ -72,54 +72,56 @@ export default function Zone() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 78%',
-          end: '+=95%',
-          scrub: 1.1,
-        },
-      })
-
-      // Les anneaux de la loupe s'ouvrent d'abord.
+      // Les anneaux de la loupe s'ouvrent à l'entrée de la section.
       gsap.utils.toArray('.zone-anneau', sectionRef.current).forEach((anneau, i) => {
-        tl.fromTo(
+        gsap.fromTo(
           anneau,
           { scale: 0.15, opacity: 0 },
-          { scale: 1, opacity: 1, ease: 'power2.out', duration: 0.5 },
-          i * 0.12,
+          {
+            scale: 1,
+            opacity: 1,
+            ease: 'power2.out',
+            duration: 0.9,
+            delay: i * 0.12,
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+          },
         )
       })
 
-      // Puis chaque commune : la ligne monte derrière son masque et le point
-      // s'allume sur la loupe, au même instant de la timeline.
+      // Chaque commune a SON propre déclencheur, accroché à sa propre ligne :
+      // elle se dévoile pendant qu'elle traverse le bas de l'écran, se rejoue en
+      // sens inverse si l'on remonte, et ne peut donc pas être manquée.
+      const avancement = new Array(VILLES.length).fill(0)
+
       VILLES.forEach((ville, i) => {
-        const position = 0.5 + i * 0.18
-        tl.fromTo(
-          sectionRef.current.querySelector('.zone-ligne[data-ville="' + ville.nom + '"]'),
-          { yPercent: 130, opacity: 0 },
-          { yPercent: 0, opacity: 1, ease: 'power2.out', duration: 0.5 },
-          position,
+        const ligne = sectionRef.current.querySelector(
+          '.zone-ligne[data-ville="' + ville.nom + '"]',
         )
+        const point = sectionRef.current.querySelector(
+          '.zone-point[data-ville="' + ville.nom + '"]',
+        )
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: ligne.parentElement,
+            start: 'top 95%',
+            end: 'top 55%',
+            scrub: 0.8,
+            onUpdate: (self) => {
+              avancement[i] = self.progress
+              setAllumees(avancement.filter((p) => p > 0.55).length)
+            },
+          },
+        })
+
+        tl.fromTo(ligne, { yPercent: 115, opacity: 0 }, { yPercent: 0, opacity: 1, ease: 'none' }, 0)
         tl.fromTo(
-          sectionRef.current.querySelector('.zone-point[data-ville="' + ville.nom + '"]'),
-          { opacity: 0, scale: 0.3, transformOrigin: ville.x + 'px ' + ville.y + 'px' },
-          { opacity: 1, scale: 1, ease: 'back.out(2)', duration: 0.45 },
-          position,
+          point,
+          { opacity: 0, scale: 0.2, transformOrigin: ville.x + 'px ' + ville.y + 'px' },
+          { opacity: 1, scale: 1, ease: 'none' },
+          0,
         )
       })
-
-      const compteur = { valeur: 0 }
-      tl.to(
-        compteur,
-        {
-          valeur: VILLES.length,
-          ease: 'none',
-          duration: (VILLES.length - 1) * 0.18 + 0.5,
-          onUpdate: () => setAllumees(Math.round(compteur.valeur)),
-        },
-        0.5,
-      )
 
       // La carte entre de plus loin et continue de dériver après la liste.
       gsap.fromTo(
@@ -176,7 +178,7 @@ export default function Zone() {
             {VILLES.map((ville) => (
               <li key={ville.nom} className="overflow-hidden border-b border-white/10">
                 <span
-                  className="zone-ligne flex items-baseline justify-between py-2.5 text-white"
+                  className="zone-ligne flex items-baseline justify-between py-3.5 text-white"
                   data-ville={ville.nom}
                 >
                   {ville.nom}

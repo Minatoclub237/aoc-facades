@@ -18,7 +18,10 @@ const NAV_ITEMS = [
     onClick: () => scrollTo(document.getElementById('hero').offsetHeight - window.innerHeight),
   },
   { label: 'Services', onClick: () => scrollTo('#metiers') },
-  { label: 'Réalisations', onClick: () => scrollTo('#travaux') },
+  { label: 'Avant / après', onClick: () => scrollTo('#travaux') },
+  { label: 'Chantiers', onClick: () => scrollTo('#chantiers') },
+  { label: 'Zone', onClick: () => scrollTo('#zone') },
+  { label: 'FAQ', onClick: () => scrollTo('#faq') },
   { label: 'Contact', onClick: () => scrollTo('#contact') },
 ]
 

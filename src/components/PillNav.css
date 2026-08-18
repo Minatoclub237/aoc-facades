@@ -4,7 +4,7 @@
 .logo-svg-container { display: flex; align-items: center; justify-content: center; }
 .pill-nav-items { background-color: #000; border-radius: 50px; padding: 4px; border: 2px solid #000; overflow: hidden; }
 .pill-list { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
-.pill { position: relative; display: block; padding: 8px 24px; border-radius: 50px; text-decoration: none; color: #000; font-weight: 600; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; overflow: hidden; background-color: #f0f0f0; transition: background-color 0.3s ease; border: none; cursor: pointer; font-family: inherit; }
+.pill { position: relative; display: block; padding: 8px 24px; border-radius: 50px; text-decoration: none; color: #000; font-weight: 600; font-size: 14px; letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; overflow: hidden; background-color: #f0f0f0; transition: background-color 0.3s ease; border: none; cursor: pointer; font-family: inherit; }
 .pill.is-active { background-color: #e0e0e0; }
 .hover-circle { position: absolute; background-color: #000; border-radius: 50%; pointer-events: none; z-index: 0; transform: scale(0); }
 .label-stack { position: relative; display: block; z-index: 1; overflow: hidden; height: 1.2em; }
@@ -15,5 +15,7 @@
 .mobile-menu-popover { position: absolute; top: 100%; left: 50%; right: auto; min-width: 200px; margin-top: 8px; background-color: var(--pill-bg); border-radius: 16px; padding: 16px; visibility: hidden; opacity: 0; }
 .mobile-menu-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .mobile-menu-link { color: var(--pill-text); text-decoration: none; font-size: 1.1rem; display: block; text-align: center; background: none; border: none; width: 100%; font-family: inherit; cursor: pointer; }
-@media (min-width: 769px) { .mobile-only { display: none !important; } }
-@media (max-width: 768px) { .desktop-only { display: none !important; } }
+@media (min-width: 1101px) { .mobile-only { display: none !important; } }
+@media (max-width: 1100px) { .desktop-only { display: none !important; } }
+/* Huit entrées : on resserre les pastilles avant de basculer sur le menu. */
+@media (max-width: 1400px) { .pill { padding: 8px 16px; font-size: 13px; } }

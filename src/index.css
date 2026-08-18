@@ -12,6 +12,7 @@
   --color-fond: #241c16;
   --color-fond-clair: #3b2e24;
   --color-surface: #795f4f;
+  --color-whatsapp: #25d366;
   --animate-marquee: marquee 20s linear infinite;
   @keyframes marquee {
     100% { transform: translateX(-50%); }

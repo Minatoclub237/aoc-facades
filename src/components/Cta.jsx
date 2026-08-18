@@ -47,7 +47,7 @@ export default function Cta({ label, href, messageWhatsapp, labelWhatsapp = 'Wha
         href={whatsapp(messageWhatsapp)}
         target="_blank"
         rel="noopener noreferrer"
-        className={BASE + ' border border-or/45 text-or hover:bg-or hover:text-fond'}
+        className={BASE + ' border border-whatsapp/60 text-whatsapp hover:bg-whatsapp hover:text-fond'}
       >
         <IconeWhatsapp />
         {labelWhatsapp}
