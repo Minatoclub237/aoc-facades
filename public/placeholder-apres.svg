@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 893" width="1600" height="893">
+  <defs>
+    <linearGradient id="murApres" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0e8da" />
+      <stop offset="100%" stop-color="#d6c8b2" />
+    </linearGradient>
+    <linearGradient id="lumApres" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fffaf0" stop-opacity="0.55" />
+      <stop offset="70%" stop-color="#fffaf0" stop-opacity="0" />
+    </linearGradient>
+    <filter id="talocheApres">
+      <feTurbulence type="fractalNoise" baseFrequency="0.014 0.11" numOctaves="3" seed="5" />
+      <feColorMatrix type="saturate" values="0" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.11" /></feComponentTransfer>
+    </filter>
+    <filter id="grainApres">
+      <feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" />
+      <feColorMatrix type="saturate" values="0" />
+      <feComponentTransfer><feFuncA type="linear" slope="0.07" /></feComponentTransfer>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="893" fill="url(#murApres)" />
+  <rect width="1600" height="893" filter="url(#talocheApres)" opacity="0.9" />
+  <rect width="1600" height="893" fill="url(#lumApres)" />
+
+  <rect x="0" y="740" width="1600" height="12" fill="#c2ae90" opacity="0.5" />
+  <rect x="0" y="752" width="1600" height="141" fill="#cdbb9d" opacity="0.32" />
+
+  <rect width="1600" height="893" filter="url(#grainApres)" />
+
+  <g>
+    <rect x="56" y="48" width="290" height="46" rx="23" fill="#3a2f22" fill-opacity="0.5" />
+    <text x="82" y="78" fill="#ffffff" fill-opacity="0.9" font-family="Manrope, sans-serif"
+          font-size="17" letter-spacing="4">PHOTO APRÈS À FOURNIR</text>
+  </g>
+</svg>

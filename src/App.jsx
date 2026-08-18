@@ -5,6 +5,7 @@ import ScrollFloat from './components/ScrollFloat'
 import GlassPanel from './components/GlassPanel'
 import Metiers from './components/Metiers'
 import AvantApres from './components/AvantApres'
+import Travaux from './components/Travaux'
 import Chantiers from './components/Chantiers'
 import Zone from './components/Zone'
 import Recrutement from './components/Recrutement'
@@ -34,6 +35,7 @@ export default function App() {
         </div>
         <Metiers />
         <AvantApres />
+        <Travaux />
         <Chantiers />
         <Zone />
         <Recrutement />
