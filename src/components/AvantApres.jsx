@@ -39,8 +39,15 @@ export default function AvantApres() {
         0,
       )
         .fromTo(poigneeRef.current, { left: '0%' }, { left: '100%', ease: 'none' }, 0)
-        .fromTo(imageAvantRef.current, { scale: 1.12, xPercent: -2 }, { scale: 1, xPercent: 2, ease: 'none' }, 0)
-        .fromTo(imageApresRef.current, { scale: 1.16, xPercent: 3 }, { scale: 1.02, xPercent: -2, ease: 'none' }, 0)
+        // Les deux photos partagent exactement le même mouvement : la moindre
+        // différence de zoom décalerait les deux moitiés et casserait l'illusion
+        // d'une seule façade coupée en deux.
+        .fromTo(
+          [imageAvantRef.current, imageApresRef.current],
+          { scale: 1.08 },
+          { scale: 1, ease: 'none' },
+          0,
+        )
         .fromTo(etiquetteAvantRef.current, { opacity: 1 }, { opacity: 0, ease: 'none' }, 0.55)
         .fromTo(etiquetteApresRef.current, { opacity: 0 }, { opacity: 1, ease: 'none' }, 0.35)
     }, sectionRef)
@@ -55,7 +62,7 @@ export default function AvantApres() {
       className="relative h-screen overflow-hidden flex flex-col justify-center px-4 md:px-12 pt-24"
       aria-label="Avant / après"
     >
-      <div className="max-w-[1250px] w-full mx-auto mb-6 md:mb-10 flex flex-wrap items-end justify-between gap-4">
+      <div className="w-full max-w-[1000px] mx-auto mb-6 md:mb-10 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-3">
             Avant / après
@@ -69,20 +76,21 @@ export default function AvantApres() {
         </p>
       </div>
 
-      <div className="max-w-[1250px] w-full mx-auto relative rounded-3xl overflow-hidden border border-white/10 h-[52vh] md:h-[62vh]">
+      <div className="w-full max-w-[1000px] mx-auto relative rounded-3xl overflow-hidden border border-white/10 aspect-[43/24]">
         <img
           ref={imageAvantRef}
-          src="/placeholder-avant.svg"
-          alt="Façade avant travaux"
-          className="absolute inset-0 w-full h-full object-cover object-left-top"
+          src="/facade-avant.webp"
+          alt="Maison de village à l'enduit fissuré et taché, avant ravalement"
+          loading="eager"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         <div ref={apresRef} className="absolute inset-0" style={{ willChange: 'clip-path' }}>
           <img
             ref={imageApresRef}
-            src="/placeholder-apres.svg"
-            alt="Façade après ravalement"
-            className="absolute inset-0 w-full h-full object-cover object-left-top"
+            src="/facade-apres.webp"
+            alt="La même maison après ravalement : enduit neuf et encadrements soulignés"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
 
