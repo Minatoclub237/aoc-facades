@@ -7,26 +7,38 @@ gsap.registerPlugin(ScrollTrigger)
 const CHANTIERS = [
   {
     titre: 'Maison\nindividuelle',
-    texte: "Ravalement complet, enduits de finition et traitement des supports, sans jamais immobiliser la maison plus que nécessaire.",
+    texte:
+      "Ravalement complet, enduits de finition et traitement des supports, sans jamais immobiliser la maison plus que nécessaire.",
+    image: '/chantiers/maison.webp',
+    alt: "Maison individuelle rénovée dans un village, échelle encore appuyée contre la façade",
   },
   {
     titre: 'Immeuble',
-    texte: "Interventions en hauteur sur copropriétés et bâtiments collectifs, avec un chantier propre et balisé du premier au dernier jour.",
+    texte:
+      "Interventions en hauteur sur copropriétés et bâtiments collectifs, avec un chantier propre et balisé du premier au dernier jour.",
+    image: '/chantiers/immeuble.webp',
+    alt: 'Immeuble en cours de rénovation, façade couverte de filets d’échafaudage',
   },
   {
     titre: 'Domaine\nviticole',
-    texte: "Bâtiments d'exploitation et bâtisses de caractère de l'Hérault et de l'Aude : enduits à la chaux, respect des matériaux d'origine.",
+    texte:
+      "Bâtiments d'exploitation et bâtisses de caractère de l'Hérault et de l'Aude : enduits à la chaux, respect des matériaux d'origine.",
+    image: '/chantiers/domaine.webp',
+    alt: 'Bâtiment de domaine viticole en pierre, vignes au premier plan',
   },
   {
     titre: 'Bâtiment\nancien',
-    texte: "Pierre, chaux, badigeons : les techniques traditionnelles appliquées là où un enduit moderne abîmerait le mur.",
+    texte:
+      "Pierre, chaux, badigeons : les techniques traditionnelles appliquées là où un enduit moderne abîmerait le mur.",
+    image: '/chantiers/ancien.webp',
+    alt: 'Maison de village ancienne en pierre apparente et enduit à la chaux',
   },
 ]
 
 /**
  * Défilement horizontal piloté par le scroll vertical. Chaque panneau a trois
- * plans qui avancent à des vitesses différentes : le chiffre géant en fond dérive
- * à contresens, le texte suit, le filet or ferme la marche.
+ * plans qui avancent à des vitesses différentes : la photo dérive lentement,
+ * le chiffre géant part à contresens, le texte suit en dernier.
  */
 export default function Chantiers() {
   const sectionRef = useRef(null)
@@ -60,6 +72,7 @@ export default function Chantiers() {
           end: 'right left',
           scrub: 1,
         }
+        gsap.fromTo(panel.querySelector('.chantier-image'), { xPercent: 5 }, { xPercent: -5, ease: 'none', scrollTrigger: commun })
         gsap.fromTo(panel.querySelector('.chantier-chiffre'), { xPercent: 18 }, { xPercent: -18, ease: 'none', scrollTrigger: commun })
         gsap.fromTo(panel.querySelector('.chantier-texte'), { xPercent: -8 }, { xPercent: 8, ease: 'none', scrollTrigger: commun })
       })
@@ -69,40 +82,71 @@ export default function Chantiers() {
   }, [])
 
   return (
-    <section id="chantiers" ref={sectionRef} className="relative h-screen overflow-hidden" aria-label="Types de chantiers">
-      <div className="absolute top-[10vh] left-0 w-full px-6 md:px-12 z-10 pointer-events-none">
-        <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-3">
-          Nos chantiers
-        </p>
-        <h2 className="font-serif text-white text-3xl md:text-5xl">
-          De la maison de village au <span className="italic text-or">domaine viticole</span>
-        </h2>
-      </div>
-
+    <section
+      id="chantiers"
+      ref={sectionRef}
+      className="relative h-screen overflow-hidden"
+      aria-label="Types de chantiers"
+    >
       <div ref={trackRef} className="absolute inset-0 flex h-full w-max items-center">
         {CHANTIERS.map((chantier, i) => (
           <article
             key={chantier.titre}
             className="chantier-panel relative flex h-full w-screen shrink-0 flex-col justify-center px-8 md:px-24 overflow-hidden"
           >
+            <img
+              src={chantier.image}
+              alt={chantier.alt}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              className="chantier-image absolute inset-0 w-full h-full object-cover scale-[1.12]"
+            />
+            {/* Voile : le texte se lit sur la gauche, la photo respire à droite. */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  'linear-gradient(to right, rgba(20,14,10,0.92) 0%, rgba(20,14,10,0.72) 32%, rgba(20,14,10,0.25) 62%, rgba(20,14,10,0.05) 100%)',
+              }}
+              aria-hidden="true"
+            />
+            <div
+              className="absolute inset-x-0 top-0 h-56"
+              style={{ background: 'linear-gradient(to bottom, rgba(20,14,10,0.85), transparent)' }}
+              aria-hidden="true"
+            />
+
             <span
               className="chantier-chiffre absolute inset-0 flex items-center justify-center font-dirtyline leading-none select-none pointer-events-none"
-              style={{ fontSize: 'clamp(14rem, 42vw, 640px)', color: 'transparent', WebkitTextStroke: '1px rgba(201,162,39,0.45)' }}
+              style={{
+                fontSize: 'clamp(14rem, 42vw, 640px)',
+                color: 'transparent',
+                WebkitTextStroke: '1px rgba(201,162,39,0.5)',
+              }}
               aria-hidden="true"
             >
               {i + 1}
             </span>
-            <div className="chantier-texte relative max-w-xl">
+
+            <div className="chantier-texte relative z-10 max-w-xl">
               <h3 className="font-serif text-white text-4xl md:text-6xl lg:text-7xl leading-[1.05] whitespace-pre-line mb-6">
                 {chantier.titre}
               </h3>
               <span className="block h-px w-16 bg-or mb-6" aria-hidden="true" />
-              <p className="font-sans text-white/65 text-base md:text-lg leading-relaxed">
+              <p className="font-sans text-white/70 text-base md:text-lg leading-relaxed">
                 {chantier.texte}
               </p>
             </div>
           </article>
         ))}
+      </div>
+
+      <div className="absolute top-[10vh] left-0 w-full px-8 md:px-24 z-20 pointer-events-none">
+        <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-3">
+          Nos chantiers
+        </p>
+        <h2 className="font-serif text-white text-3xl md:text-5xl">
+          De la maison de village au <span className="italic text-or">domaine viticole</span>
+        </h2>
       </div>
     </section>
   )
