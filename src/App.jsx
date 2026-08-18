@@ -9,6 +9,7 @@ import Chantiers from './components/Chantiers'
 import Zone from './components/Zone'
 import Recrutement from './components/Recrutement'
 import Contact from './components/Contact'
+import Footer from './components/Footer'
 import { initSmoothScroll } from './smoothScroll'
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
         <Zone />
         <Recrutement />
         <Contact />
+        <Footer />
       </main>
     </>
   )

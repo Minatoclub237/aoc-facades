@@ -6,33 +6,42 @@ gsap.registerPlugin(ScrollTrigger)
 
 const SIEGE = { nom: 'Lignan-sur-Orb', lat: 43.3597, lon: 3.1897 }
 
+// Les décalages d'étiquette sont posés à la main : autour de Béziers les
+// communes sont à quelques kilomètres les unes des autres et les libellés se
+// chevaucheraient quel que soit le placement automatique.
 const COMMUNES = [
-  { nom: 'Béziers', lat: 43.3442, lon: 3.2158 },
-  { nom: 'Sérignan', lat: 43.2789, lon: 3.2764 },
-  { nom: 'Capestang', lat: 43.3283, lon: 3.0417 },
-  { nom: 'Valras-Plage', lat: 43.2464, lon: 3.2942 },
-  { nom: 'Pézenas', lat: 43.4602, lon: 3.4234 },
-  { nom: 'Agde', lat: 43.3097, lon: 3.4756 },
-  { nom: 'Narbonne', lat: 43.1836, lon: 3.0039 },
-  { nom: 'Sète', lat: 43.4029, lon: 3.6967 },
-  { nom: 'Montpellier', lat: 43.6119, lon: 3.8772 },
+  { nom: 'Béziers', lat: 43.3442, lon: 3.2158, dx: 13, dy: 5, ancre: 'start' },
+  { nom: 'Sérignan', lat: 43.2789, lon: 3.2764, dx: 13, dy: 6, ancre: 'start' },
+  { nom: 'Capestang', lat: 43.3283, lon: 3.0417, dx: -13, dy: 4, ancre: 'end' },
+  { nom: 'Valras-Plage', lat: 43.2464, lon: 3.2942, dx: 13, dy: 24, ancre: 'start' },
+  { nom: 'Pézenas', lat: 43.4602, lon: 3.4234, dx: 13, dy: -8, ancre: 'start' },
+  { nom: 'Agde', lat: 43.3097, lon: 3.4756, dx: 13, dy: -12, ancre: 'start' },
+  { nom: 'Narbonne', lat: 43.1836, lon: 3.0039, dx: -13, dy: 6, ancre: 'end' },
+  { nom: 'Sète', lat: 43.4029, lon: 3.6967, dx: 13, dy: 6, ancre: 'start' },
+  { nom: 'Montpellier', lat: 43.6119, lon: 3.8772, dx: -13, dy: -10, ancre: 'end' },
 ]
 
-// Distance réelle au siège : projection équirectangulaire, un degré de longitude
-// valant cos(lat) degré de latitude à cette latitude.
+// Projection équirectangulaire centrée sur le siège : à cette latitude, un degré
+// de longitude vaut cos(lat) degré de latitude, sinon la carte s'étire vers l'est.
 const KM_PAR_DEGRE = 111
+const CENTRE = 300
+const PX_PAR_KM = 212 / 68
+const ANNEAUX = [15, 30, 60]
 
-const distance = (ville) => {
+const projeter = (ville) => {
   const dy = (ville.lat - SIEGE.lat) * KM_PAR_DEGRE
   const dx = (ville.lon - SIEGE.lon) * KM_PAR_DEGRE * Math.cos((SIEGE.lat * Math.PI) / 180)
-  return Math.round(Math.hypot(dx, dy))
+  return {
+    ...ville,
+    km: Math.round(Math.hypot(dx, dy)),
+    x: CENTRE + dx * PX_PAR_KM,
+    y: CENTRE - dy * PX_PAR_KM,
+  }
 }
 
-const VILLES = COMMUNES.map((ville) => ({ ...ville, km: distance(ville) })).sort(
-  (a, b) => a.km - b.km,
-)
+const VILLES = COMMUNES.map(projeter).sort((a, b) => a.km - b.km)
 
-// Position de l'atelier sur la carte, en pourcentage du cadre.
+// Position de l'atelier sur la carte de France, en pourcentage du cadre.
 const REPERE = { x: 53.4, y: 71.8 }
 
 // Le relief est reconstruit en CSS : le détourage ne pouvait pas distinguer
@@ -51,8 +60,9 @@ const MASQUE = {
 }
 
 /**
- * La carte de France bascule et dérive au scroll, l'atelier pulse dans l'Hérault,
- * et la liste des communes se dévoile ligne à ligne, accrochée au défilement.
+ * La France en relief donne le contexte, la loupe posée sur l'Hérault donne le
+ * détail : à l'échelle du pays, les neuf communes tiendraient dans un pixel.
+ * Liste et loupe se remplissent ensemble, accrochées au scroll.
  */
 export default function Zone() {
   const sectionRef = useRef(null)
@@ -61,23 +71,40 @@ export default function Zone() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Chaque ligne monte derrière son masque, au rythme du scroll : le mouvement
-      // est continu et réversible, pas un fondu déclenché une seule fois.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 78%',
-          end: '+=85%',
+          end: '+=95%',
           scrub: 1.1,
         },
       })
 
-      gsap.utils.toArray('.zone-ligne', sectionRef.current).forEach((ligne, i) => {
+      // Les anneaux de la loupe s'ouvrent d'abord.
+      gsap.utils.toArray('.zone-anneau', sectionRef.current).forEach((anneau, i) => {
         tl.fromTo(
-          ligne,
+          anneau,
+          { scale: 0.15, opacity: 0 },
+          { scale: 1, opacity: 1, ease: 'power2.out', duration: 0.5 },
+          i * 0.12,
+        )
+      })
+
+      // Puis chaque commune : la ligne monte derrière son masque et le point
+      // s'allume sur la loupe, au même instant de la timeline.
+      VILLES.forEach((ville, i) => {
+        const position = 0.5 + i * 0.18
+        tl.fromTo(
+          sectionRef.current.querySelector('.zone-ligne[data-ville="' + ville.nom + '"]'),
           { yPercent: 130, opacity: 0 },
           { yPercent: 0, opacity: 1, ease: 'power2.out', duration: 0.5 },
-          i * 0.18,
+          position,
+        )
+        tl.fromTo(
+          sectionRef.current.querySelector('.zone-point[data-ville="' + ville.nom + '"]'),
+          { opacity: 0, scale: 0.3, transformOrigin: ville.x + 'px ' + ville.y + 'px' },
+          { opacity: 1, scale: 1, ease: 'back.out(2)', duration: 0.45 },
+          position,
         )
       })
 
@@ -90,7 +117,7 @@ export default function Zone() {
           duration: (VILLES.length - 1) * 0.18 + 0.5,
           onUpdate: () => setAllumees(Math.round(compteur.valeur)),
         },
-        0,
+        0.5,
       )
 
       // La carte entre de plus loin et continue de dériver après la liste.
@@ -147,7 +174,10 @@ export default function Zone() {
           <ul className="font-sans text-sm border-t border-white/10">
             {VILLES.map((ville) => (
               <li key={ville.nom} className="overflow-hidden border-b border-white/10">
-                <span className="zone-ligne flex items-baseline justify-between py-2.5 text-white">
+                <span
+                  className="zone-ligne flex items-baseline justify-between py-2.5 text-white"
+                  data-ville={ville.nom}
+                >
                   {ville.nom}
                   <span className="text-or">{ville.km} km</span>
                 </span>
@@ -156,10 +186,10 @@ export default function Zone() {
           </ul>
         </div>
 
-        <div className="relative" style={{ perspective: '1200px' }}>
+        <div className="relative pb-[22%]" style={{ perspective: '1200px' }}>
           <div
             ref={carteRef}
-            className="relative w-full aspect-[894/828]"
+            className="relative w-[84%] ml-auto aspect-[894/828]"
             style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
           >
             {/* Relief : des copies décalées du même masque, de la plus profonde à la plus proche. */}
@@ -200,16 +230,98 @@ export default function Zone() {
                 className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 block w-3 h-3 rounded-full bg-or"
                 style={{ boxShadow: '0 0 18px rgba(201,162,39,0.9)' }}
               />
-              {/* Le libellé passe sur l'ivoire de la carte : il lui faut son propre fond. */}
-              <span className="absolute left-5 -top-3 whitespace-nowrap font-sans text-[11px] tracking-[0.2em] uppercase text-or bg-fond/85 backdrop-blur-sm px-2.5 py-1 rounded-full border border-or/30">
-                Lignan-sur-Orb
-              </span>
             </span>
           </div>
 
-          <p className="mt-8 font-sans text-white/40 text-xs md:text-sm text-center lg:text-left">
-            Hérault et Aude — de Montpellier à Narbonne.
-          </p>
+          {/* Trait de rappel entre le repère et la loupe */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <line
+              x1={16 + REPERE.x * 0.84}
+              y1={REPERE.y * 0.78}
+              x2="30"
+              y2="70"
+              stroke="var(--color-or)"
+              strokeOpacity="0.45"
+              strokeWidth="0.25"
+              strokeDasharray="1.2 1.2"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+
+          {/* La loupe : le détail de la zone réellement desservie */}
+          <div className="absolute left-0 bottom-0 w-[54%] max-w-[330px] aspect-square rounded-full border border-or/35 bg-fond/85 backdrop-blur-sm overflow-hidden shadow-[0_30px_60px_rgba(20,14,10,0.6)]">
+            <svg viewBox="0 0 600 600" className="w-full h-full" aria-hidden="true">
+              <defs>
+                <radialGradient id="zoneCoeur">
+                  <stop offset="0%" stopColor="var(--color-or)" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="var(--color-or)" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+              <circle cx={CENTRE} cy={CENTRE} r="190" fill="url(#zoneCoeur)" />
+
+              {ANNEAUX.map((km) => (
+                <circle
+                  key={km}
+                  className="zone-anneau"
+                  cx={CENTRE}
+                  cy={CENTRE}
+                  r={km * PX_PAR_KM}
+                  fill="none"
+                  stroke="var(--color-or)"
+                  strokeOpacity="0.3"
+                  strokeWidth="1.4"
+                  strokeDasharray="5 9"
+                  style={{ transformOrigin: CENTRE + 'px ' + CENTRE + 'px' }}
+                />
+              ))}
+
+              {VILLES.map((ville) => (
+                <g key={ville.nom} className="zone-point" data-ville={ville.nom} style={{ opacity: 0 }}>
+                  <line
+                    x1={CENTRE}
+                    y1={CENTRE}
+                    x2={ville.x}
+                    y2={ville.y}
+                    stroke="var(--color-or)"
+                    strokeOpacity="0.22"
+                    strokeWidth="1.2"
+                  />
+                  <circle cx={ville.x} cy={ville.y} r="5" fill="var(--color-or)" />
+                  <text
+                    x={ville.x + ville.dx}
+                    y={ville.y + ville.dy}
+                    textAnchor={ville.ancre}
+                    fill="#ffffff"
+                    fontFamily="Manrope, sans-serif"
+                    fontSize="16"
+                    fontWeight="600"
+                  >
+                    {ville.nom}
+                  </text>
+                </g>
+              ))}
+
+              <circle cx={CENTRE} cy={CENTRE} r="16" fill="var(--color-or)" fillOpacity="0.25" />
+              <circle cx={CENTRE} cy={CENTRE} r="7" fill="var(--color-or)" />
+              <text
+                x={CENTRE}
+                y={CENTRE - 26}
+                textAnchor="middle"
+                fill="var(--color-or)"
+                fontFamily="Manrope, sans-serif"
+                fontSize="17"
+                fontWeight="600"
+                letterSpacing="2"
+              >
+                L&apos;ATELIER
+              </text>
+            </svg>
+          </div>
         </div>
       </div>
     </section>

@@ -85,10 +85,10 @@ export default function Contact() {
   }
 
   return (
-    <footer
+    <section
       id="contact"
       ref={sectionRef}
-      className="relative px-4 md:px-12 pt-[10vh] pb-12"
+      className="relative px-4 md:px-12 pt-[10vh] pb-24"
       aria-label="Contact"
     >
       <div className="max-w-[1250px] mx-auto grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
@@ -203,9 +203,6 @@ export default function Contact() {
         </aside>
       </div>
 
-      <p className="max-w-[1250px] mx-auto mt-16 pt-6 border-t border-white/10 font-sans text-white/30 text-xs">
-        AOC Façades — société à responsabilité limitée, maçonnerie et rénovation.
-      </p>
-    </footer>
+    </section>
   )
 }
