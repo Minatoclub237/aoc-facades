@@ -5,21 +5,44 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 const METIERS = [
-  { titre: 'Restauration\nde façades', texte: "Rénovation dans les règles de l'art." },
-  { titre: "Application\nd'enduits", texte: 'Enduits traditionnels à la chaux et minéraux.' },
-  { titre: 'Peinture\nextérieure', texte: 'Peintures de qualité pour une finition durable.' },
-  { titre: 'Nettoyage\net traitement', texte: 'Nettoyage, traitement et protection des façades.' },
-  { titre: 'Finitions\nsoignées', texte: 'Des détails qui font toute la différence.' },
+  {
+    titre: 'Restauration\nde façades',
+    texte: "Rénovation dans les règles de l'art.",
+    media: 'metier-1',
+  },
+  {
+    titre: "Application\nd'enduits",
+    texte: 'Enduits traditionnels à la chaux et minéraux.',
+    media: 'metier-2',
+  },
+  {
+    titre: 'Peinture\nextérieure',
+    texte: 'Peintures de qualité pour une finition durable.',
+    media: 'metier-3',
+  },
+  {
+    titre: 'Nettoyage\net traitement',
+    texte: 'Nettoyage, traitement et protection des façades.',
+    media: 'metier-4',
+  },
+  {
+    titre: 'Finitions\nsoignées',
+    texte: 'Des détails qui font toute la différence.',
+    media: 'metier-5',
+  },
 ]
 
 /**
  * Les cinq métiers arrivent empilés puis se déploient en éventail 3D
  * pendant que la section est épinglée. Le paquet suit ensuite la souris.
+ * Chaque carte est un plan de chantier en boucle, mis en lecture seulement
+ * quand la section traverse l'écran.
  */
 export default function Metiers() {
   const sectionRef = useRef(null)
   const deckRef = useRef(null)
   const cardsRef = useRef([])
+  const videosRef = useRef([])
 
   useEffect(() => {
     const mm = gsap.matchMedia()
@@ -84,6 +107,29 @@ export default function Metiers() {
     return () => mm.revert()
   }, [])
 
+  // Cinq décodeurs vidéo en parallèle : on ne les lance que pendant la traversée
+  // de la section, et jamais si le visiteur a demandé moins d'animation.
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const videos = videosRef.current.filter(Boolean)
+    // IntersectionObserver plutôt que ScrollTrigger : la section est épinglée,
+    // ce qui décale les bornes du trigger, et onToggle ne se déclenche pas quand
+    // la section est déjà visible au moment de la création.
+    const observer = new IntersectionObserver(
+      ([entree]) => {
+        videos.forEach((video) => {
+          if (entree.isIntersecting) video.play().catch(() => {})
+          else video.pause()
+        })
+      },
+      { rootMargin: '300px 0px' },
+    )
+    observer.observe(sectionRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
   useEffect(() => {
     const deck = deckRef.current
     if (!deck || window.matchMedia('(max-width: 767px)').matches) return
@@ -104,10 +150,18 @@ export default function Metiers() {
   }, [])
 
   return (
-    <section id="metiers" ref={sectionRef} className="relative md:h-screen overflow-hidden py-24 md:py-0" aria-label="Nos activités">
+    <section
+      id="metiers"
+      ref={sectionRef}
+      className="relative md:h-screen overflow-hidden py-24 md:py-0"
+      aria-label="Nos activités"
+    >
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 55%, var(--color-fond-clair), transparent 70%)' }}
+        style={{
+          background:
+            'radial-gradient(ellipse 70% 55% at 50% 55%, var(--color-fond-clair), transparent 70%)',
+        }}
         aria-hidden="true"
       />
       <div className="relative md:absolute md:top-[12vh] left-0 w-full px-6 md:px-12 text-center z-10">
@@ -119,7 +173,10 @@ export default function Metiers() {
         </h2>
       </div>
 
-      <div className="relative md:absolute md:inset-0 flex items-center justify-center mt-12 md:mt-0" style={{ perspective: '1400px' }}>
+      <div
+        className="relative md:absolute md:inset-0 flex items-center justify-center mt-12 md:mt-0"
+        style={{ perspective: '1400px' }}
+      >
         <div
           ref={deckRef}
           className="relative w-full flex flex-col items-center gap-5 md:block md:h-[420px]"
@@ -129,17 +186,49 @@ export default function Metiers() {
             <article
               key={metier.titre}
               ref={(el) => (cardsRef.current[i] = el)}
-              className="metier-carte relative md:absolute md:left-1/2 md:top-1/2 w-[min(300px,84vw)] md:w-[260px] h-auto md:h-[380px] rounded-2xl border border-or/25 bg-surface/20 backdrop-blur-xl p-6 md:p-7 flex flex-col justify-between gap-10 md:gap-0"
+              className="metier-carte group relative md:absolute md:left-1/2 md:top-1/2 w-[min(300px,84vw)] md:w-[260px] h-[420px] md:h-[380px] rounded-2xl border border-or/25 bg-fond-clair overflow-hidden"
               style={{ boxShadow: '0 30px 80px rgba(20, 14, 10, 0.55)' }}
             >
-              <span className="font-serif text-or text-2xl md:text-3xl">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div>
-                <h3 className="font-serif text-white text-2xl md:text-3xl leading-[1.1] whitespace-pre-line mb-3">
-                  {metier.titre}
-                </h3>
-                <p className="font-sans text-white/60 text-sm leading-relaxed">{metier.texte}</p>
+              <video
+                ref={(el) => (videosRef.current[i] = el)}
+                src={'/metiers/' + metier.media + '.mp4'}
+                poster={'/metiers/' + metier.media + '.webp'}
+                muted
+                loop
+                playsInline
+                preload="none"
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-105"
+              />
+
+              {/* Voiles : le bas porte le texte, le haut assied le numéro doré
+                  qui se perdait sur les murs clairs. */}
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(to top, rgba(20,14,10,0.94) 22%, rgba(20,14,10,0.55) 48%, rgba(20,14,10,0.12) 78%)',
+                }}
+                aria-hidden="true"
+              />
+              <div
+                className="absolute inset-x-0 top-0 h-32"
+                style={{
+                  background: 'linear-gradient(to bottom, rgba(20,14,10,0.6), transparent)',
+                }}
+                aria-hidden="true"
+              />
+
+              <div className="relative z-10 h-full p-6 md:p-7 flex flex-col justify-between">
+                <span className="font-serif text-or text-2xl md:text-3xl drop-shadow">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 className="font-serif text-white text-2xl md:text-3xl leading-[1.1] whitespace-pre-line mb-3">
+                    {metier.titre}
+                  </h3>
+                  <p className="font-sans text-white/65 text-sm leading-relaxed">{metier.texte}</p>
+                </div>
               </div>
             </article>
           ))}
