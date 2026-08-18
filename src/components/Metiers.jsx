@@ -102,6 +102,19 @@ export default function Metiers() {
             scrollTrigger: { trigger: card, start: 'top 85%' },
           },
         )
+
+        // Faute de souris, la carte s'incline au passage : le relief reste.
+        gsap.fromTo(
+          card,
+          { rotationX: 10, rotationY: -5, scale: 0.96 },
+          {
+            rotationX: -8,
+            rotationY: 5,
+            scale: 1,
+            ease: 'none',
+            scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 1.1 },
+          },
+        )
       })
     })
 
@@ -180,14 +193,14 @@ export default function Metiers() {
       >
         <div
           ref={deckRef}
-          className="relative w-full flex flex-col items-center gap-5 md:block md:h-[420px]"
+          className="relative w-full flex flex-col items-center gap-8 md:gap-5 md:block md:h-[420px]"
           style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
         >
           {METIERS.map((metier, i) => (
             <article
               key={metier.titre}
               ref={(el) => (cardsRef.current[i] = el)}
-              className="metier-carte group relative md:absolute md:left-1/2 md:top-1/2 w-[min(300px,84vw)] md:w-[260px] h-[420px] md:h-[380px] rounded-2xl border border-or/25 bg-fond-clair overflow-hidden"
+              className="metier-carte group relative [transform-style:preserve-3d] md:absolute md:left-1/2 md:top-1/2 w-[min(300px,84vw)] md:w-[260px] h-[420px] md:h-[380px] rounded-2xl border border-or/25 bg-fond-clair overflow-hidden"
               style={{ boxShadow: '0 30px 80px rgba(20, 14, 10, 0.55)' }}
             >
               <video

@@ -1,10 +1,9 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Cta from './Cta'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const MARQUEE_ITEMS = ['WEBER', 'SIKA', 'PAREXLANKO', 'STO', 'KNAUF', 'ZOLPAN']
 
 export default function GlassPanel() {
   const containerRef = useRef(null)
@@ -38,10 +37,32 @@ export default function GlassPanel() {
     }
   }, [])
 
-  // Parallaxe 3D à la souris
+  // Parallaxe 3D. Sans souris (tactile), c'est le scroll qui incline le panneau.
   useEffect(() => {
     const panel = panelRef.current
     if (!panel) return
+
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const tween = gsap.fromTo(
+        panel,
+        { rotationX: 12, rotationY: -6 },
+        {
+          rotationX: -4,
+          rotationY: 4,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top bottom',
+            end: 'bottom bottom',
+            scrub: 1.2,
+          },
+        },
+      )
+      return () => {
+        tween.scrollTrigger?.kill()
+        tween.kill()
+      }
+    }
 
     const onMouseMove = (e) => {
       const moveX = (e.clientX / window.innerWidth - 0.5) * 2
@@ -72,7 +93,7 @@ export default function GlassPanel() {
       >
         <div
           ref={panelRef}
-          className="w-full h-full flex flex-col justify-between rounded-3xl relative overflow-hidden"
+          className="w-full h-full flex flex-col justify-center rounded-3xl relative overflow-hidden"
           style={{
             backgroundColor: 'rgba(0, 0, 0, 0.16)',
             backdropFilter: 'blur(160px)',
@@ -99,28 +120,16 @@ export default function GlassPanel() {
                 ancien. Notre objectif est simple : vous offrir un résultat durable,{' '}
                 <span className="italic">d’exception</span> et à la hauteur de vos attentes.
               </p>
-              <p className="text-white/70 text-lg md:text-xl lg:text-2xl">
-                Contactez-nous dès aujourd’hui pour une étude personnalisée et un devis gratuit.
-              </p>
+              <Cta
+                className="justify-center pt-4"
+                label="Recevoir mon étude personnalisée"
+                href="#contact"
+                messageWhatsapp="Bonjour, je souhaite une étude pour ma façade. Voici mon projet :"
+                labelWhatsapp="En parler sur WhatsApp"
+              />
             </div>
           </div>
 
-          <div className="border-t border-white/10 py-6 overflow-hidden">
-            <div className="flex w-max animate-marquee">
-              {Array.from({ length: 4 }).map((_, groupIndex) => (
-                <div key={groupIndex} className="flex shrink-0">
-                  {MARQUEE_ITEMS.map((name) => (
-                    <span
-                      key={`${groupIndex}-${name}`}
-                      className="px-8 md:px-12 text-white opacity-40 hover:opacity-100 transition-opacity duration-300 uppercase font-sans font-semibold text-sm tracking-widest"
-                    >
-                      {name}
-                    </span>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>
