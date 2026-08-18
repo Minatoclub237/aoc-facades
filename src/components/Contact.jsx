@@ -23,6 +23,7 @@ const CHAMPS = [
 export default function Contact() {
   const sectionRef = useRef(null)
   const carteRef = useRef(null)
+  const videoRef = useRef(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -69,6 +70,23 @@ export default function Contact() {
     return () => ctx.revert()
   }, [])
 
+  // La vidéo ne tourne que pendant la traversée de la section.
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const observer = new IntersectionObserver(
+      ([entree]) => {
+        if (entree.isIntersecting) video.play().catch(() => {})
+        else video.pause()
+      },
+      { rootMargin: '300px 0px' },
+    )
+    observer.observe(sectionRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
   // Sans back-end, la demande part par mail avec les champs pré-remplis.
   const envoyer = (e) => {
     e.preventDefault()
@@ -89,23 +107,38 @@ export default function Contact() {
     <section
       id="contact"
       ref={sectionRef}
-      className="relative px-4 md:px-12 pt-[10vh] pb-24"
+      className="relative px-4 md:px-12 pt-[10vh] pb-24 overflow-hidden"
       aria-label="Contact"
     >
-      <div className="max-w-[1250px] mx-auto grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
-        <div>
+      {/* Fond vidéo laissé à pleine opacité : la lisibilité est obtenue par le
+          poids des caractères, leur ombre portée, et les panneaux de verre —
+          jamais par un voile qui éteindrait l'image. */}
+      <video
+        ref={videoRef}
+        src="/contact/contact.mp4"
+        poster="/contact/contact.webp"
+        muted
+        loop
+        playsInline
+        preload="none"
+        aria-hidden="true"
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+
+      <div className="relative z-10 max-w-[1250px] mx-auto grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+        <div className="rounded-3xl border border-white/10 bg-fond/70 backdrop-blur-xl p-7 md:p-10">
           <div className="overflow-hidden">
-            <p className="contact-ligne font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or">
+            <p className="contact-ligne font-sans font-bold uppercase tracking-[0.35em] text-xs md:text-sm text-or-clair">
               Contact
             </p>
           </div>
           <div className="overflow-hidden mt-5 mb-6">
-            <h2 className="contact-ligne font-serif text-white text-4xl md:text-6xl lg:text-[68px] leading-[1.03]">
+            <h2 className="contact-ligne font-serif text-white text-4xl md:text-6xl lg:text-[68px] leading-[1.03]" style={{ textShadow: '0 2px 24px rgba(20,14,10,0.85)' }}>
               Parlons de <span className="italic text-or">votre façade</span>
             </h2>
           </div>
           <div className="overflow-hidden mb-12">
-            <p className="contact-ligne font-sans text-white/55 text-base md:text-lg max-w-lg leading-relaxed">
+            <p className="contact-ligne font-sans font-medium text-white/80 text-base md:text-lg max-w-lg leading-relaxed">
               Décrivez-nous le bâtiment en deux lignes. Nous passons le voir, puis vous recevez
               une étude personnalisée et un devis gratuit.
             </p>
@@ -117,7 +150,7 @@ export default function Contact() {
                 <div key={champ.id} className={'contact-champ' + (champ.id === 'commune' ? ' sm:col-span-2' : '')}>
                   <label
                     htmlFor={champ.id}
-                    className="block font-sans uppercase tracking-[0.2em] text-[11px] text-white/40 mb-2"
+                    className="block font-sans font-bold uppercase tracking-[0.2em] text-[11px] text-white/70 mb-2"
                   >
                     {champ.label}
                   </label>
@@ -127,7 +160,7 @@ export default function Contact() {
                     type={champ.type}
                     autoComplete={champ.autoComplete}
                     required
-                    className="w-full bg-transparent border-b border-white/20 pb-3 font-sans text-white text-base outline-none transition-colors duration-500 focus:border-or"
+                    className="w-full bg-transparent border-b border-white/35 pb-3 font-sans font-semibold text-white text-base outline-none transition-colors duration-500 focus:border-or"
                   />
                 </div>
               ))}
@@ -135,7 +168,7 @@ export default function Contact() {
               <div className="contact-champ sm:col-span-2">
                 <label
                   htmlFor="projet"
-                  className="block font-sans uppercase tracking-[0.2em] text-[11px] text-white/40 mb-2"
+                  className="block font-sans font-bold uppercase tracking-[0.2em] text-[11px] text-white/70 mb-2"
                 >
                   Votre projet
                 </label>
@@ -143,7 +176,7 @@ export default function Contact() {
                   id="projet"
                   name="projet"
                   rows="3"
-                  className="w-full bg-transparent border-b border-white/20 pb-3 font-sans text-white text-base outline-none resize-none transition-colors duration-500 focus:border-or"
+                  className="w-full bg-transparent border-b border-white/35 pb-3 font-sans font-semibold text-white text-base outline-none resize-none transition-colors duration-500 focus:border-or"
                 />
               </div>
             </div>
@@ -171,9 +204,9 @@ export default function Contact() {
 
         <aside
           ref={carteRef}
-          className="rounded-3xl border border-white/10 bg-surface/12 p-8 md:p-10 h-fit lg:sticky lg:top-28"
+          className="rounded-3xl border border-white/10 bg-fond/70 backdrop-blur-xl p-8 md:p-10 h-fit lg:sticky lg:top-28"
         >
-          <p className="font-sans uppercase tracking-[0.2em] text-[11px] text-white/40 mb-4">
+          <p className="font-sans font-bold uppercase tracking-[0.2em] text-[11px] text-white/70 mb-4">
             Par téléphone
           </p>
           <a
@@ -185,25 +218,25 @@ export default function Contact() {
 
           <dl className="space-y-7 font-sans text-sm border-t border-white/10 pt-8">
             <div>
-              <dt className="text-white/40 uppercase tracking-[0.2em] text-[11px] mb-2">Atelier</dt>
-              <dd className="text-white/75 leading-relaxed">
+              <dt className="text-white/60 font-bold uppercase tracking-[0.2em] text-[11px] mb-2">Atelier</dt>
+              <dd className="text-white/85 font-medium leading-relaxed">
                 5 placette des Rosiers
                 <br />
                 34490 Lignan-sur-Orb, Hérault
               </dd>
             </div>
             <div>
-              <dt className="text-white/40 uppercase tracking-[0.2em] text-[11px] mb-2">
+              <dt className="text-white/60 font-bold uppercase tracking-[0.2em] text-[11px] mb-2">
                 Interventions
               </dt>
-              <dd className="text-white/75 leading-relaxed">
+              <dd className="text-white/85 font-medium leading-relaxed">
                 De Montpellier à Narbonne
                 <br />
                 Hérault et Aude
               </dd>
             </div>
             <div>
-              <dt className="text-white/40 uppercase tracking-[0.2em] text-[11px] mb-2">Horaires</dt>
+              <dt className="text-white/60 font-bold uppercase tracking-[0.2em] text-[11px] mb-2">Horaires</dt>
               <dd className="text-white/40 leading-relaxed italic">
                 Du lundi au vendredi — à compléter
               </dd>

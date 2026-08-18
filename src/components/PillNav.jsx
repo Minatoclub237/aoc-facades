@@ -12,15 +12,8 @@ const LOGO_PATHS = [
 
 const NAV_ITEMS = [
   { label: 'Accueil', onClick: () => scrollTo(0) },
-  // Le panneau « À propos » est révélé tout en bas du hero.
-  {
-    label: 'À propos',
-    onClick: () => scrollTo(document.getElementById('hero').offsetHeight - window.innerHeight),
-  },
   { label: 'Services', onClick: () => scrollTo('#metiers') },
-  { label: 'Avant / après', onClick: () => scrollTo('#travaux') },
   { label: 'Chantiers', onClick: () => scrollTo('#chantiers') },
-  { label: 'Zone', onClick: () => scrollTo('#zone') },
   { label: 'FAQ', onClick: () => scrollTo('#faq') },
   { label: 'Contact', onClick: () => scrollTo('#contact') },
 ]
