@@ -20,7 +20,8 @@ export default function App() {
       <ScrollVideo src="/hero.mp4" srcMobile="/hero-mobile.mp4" poster="/hero-poster.webp" />
       <PillNav />
       <div id="hero" style={{ position: 'relative', height: '500vh' }}>
-        <ScrollFloat>{`Toute La\nPuissance`}</ScrollFloat>
+        <ScrollFloat>{`PEAU
+NEUVE`}</ScrollFloat>
         <GlassPanel />
       </div>
       <main className="relative z-30">

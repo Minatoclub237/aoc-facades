@@ -4,62 +4,44 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
+// Déplacer la tête de lecture image par image (`currentTime`) ne fonctionne pas
+// de façon fiable sur Safari iOS : l'élément reste noir. Sur tactile on renonce
+// donc au scrub et on joue la vidéo en boucle, ce qui, lui, marche partout.
+const tactile = typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches
+
 export default function ScrollVideo({ src, srcMobile, poster, className = '' }) {
   const videoRef = useRef(null)
   const wrapperRef = useRef(null)
-  const [progress, setProgress] = useState(0)
-  const [ready, setReady] = useState(false)
-  // 14 Mo sur un réseau mobile, c'est un écran noir pendant une minute :
-  // les petits écrans reçoivent une version allégée.
+  // 14 Mo sur un réseau mobile, c'est une minute d'attente : les petits écrans
+  // reçoivent une version allégée.
   const [source] = useState(() =>
     srcMobile && window.matchMedia('(max-width: 900px)').matches ? srcMobile : src,
   )
 
-  // Chargement : on suit la progression du buffer pour l'overlay
+  // Amorçage : iOS ne peint aucune image tant que la lecture n'a pas démarré.
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
 
-    const onProgress = () => {
-      if (!video.duration || !video.buffered.length) return
-      const end = video.buffered.end(video.buffered.length - 1)
-      setProgress(Math.min(100, Math.round((end / video.duration) * 100)))
-    }
-    const onCanPlay = () => {
-      setProgress(100)
-      setReady(true)
-    }
-
-    // iOS ne peint aucune image tant que la lecture n'a pas été amorcée : on la
-    // lance puis on la coupe aussitôt, sinon le fond reste noir jusqu'au premier
-    // geste du visiteur.
-    const amorcer = () => {
+    const demarrer = () => {
       const lecture = video.play()
       if (lecture && typeof lecture.then === 'function') {
-        lecture.then(() => video.pause()).catch(() => {})
+        lecture.then(() => {
+          if (!tactile) video.pause()
+        }).catch(() => {})
       }
-      setReady(true)
     }
 
-    video.addEventListener('progress', onProgress)
-    video.addEventListener('canplay', onCanPlay)
-    video.addEventListener('loadeddata', amorcer)
-    // Filet de sécurité : jamais d'écran de chargement bloquant au-delà de 5 s,
-    // le poster prend le relais si la vidéo n'est pas prête.
-    const secours = setTimeout(() => setReady(true), 5000)
+    video.addEventListener('loadeddata', demarrer)
+    if (video.readyState >= 2) demarrer()
 
-    return () => {
-      clearTimeout(secours)
-      video.removeEventListener('progress', onProgress)
-      video.removeEventListener('canplay', onCanPlay)
-      video.removeEventListener('loadeddata', amorcer)
-    }
+    return () => video.removeEventListener('loadeddata', demarrer)
   }, [])
 
-  // Scrub : le scroll pilote la position de lecture
+  // Scrub : réservé aux écrans avec souris.
   useEffect(() => {
     const video = videoRef.current
-    if (!video) return
+    if (!video || tactile) return
 
     let currentTarget = 0
     let seekPending = false
@@ -105,7 +87,7 @@ export default function ScrollVideo({ src, srcMobile, poster, className = '' }) 
   // Parallaxe souris sur le conteneur vidéo
   useEffect(() => {
     const wrapper = wrapperRef.current
-    if (!wrapper) return
+    if (!wrapper || tactile) return
 
     const onMouseMove = (e) => {
       const moveX = (e.clientX / window.innerWidth - 0.5) * 2
@@ -123,27 +105,28 @@ export default function ScrollVideo({ src, srcMobile, poster, className = '' }) 
   }, [])
 
   return (
-    <>
-      {!ready && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black">
-          <span className="text-2xl font-sans text-white">Chargement… {progress}%</span>
-        </div>
-      )}
-      <div
-        ref={wrapperRef}
-        className={`fixed top-0 left-0 w-full h-full z-0 scale-[1.05] origin-center ${className}`}
-      >
-        <video
-          ref={videoRef}
-          src={source}
-          poster={poster}
-          muted
-          playsInline
-          preload="auto"
-          crossOrigin="anonymous"
-          className="w-full h-full object-cover scale-[1.35]"
-        />
-      </div>
-    </>
+    <div
+      ref={wrapperRef}
+      className={`fixed top-0 left-0 w-full h-full z-0 scale-[1.05] origin-center ${className}`}
+      // Le poster est peint par le conteneur : quelque chose est visible dès la
+      // première seconde, sans écran de chargement qui bloque la page.
+      style={{
+        backgroundImage: 'url(' + poster + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <video
+        ref={videoRef}
+        src={source}
+        poster={poster}
+        muted
+        loop={tactile}
+        autoPlay={tactile}
+        playsInline
+        preload="auto"
+        className="w-full h-full object-cover scale-[1.35]"
+      />
+    </div>
   )
 }

@@ -23,7 +23,6 @@ const CHAMPS = [
 export default function Contact() {
   const sectionRef = useRef(null)
   const carteRef = useRef(null)
-  const videoRef = useRef(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -70,23 +69,6 @@ export default function Contact() {
     return () => ctx.revert()
   }, [])
 
-  // La vidéo ne tourne que pendant la traversée de la section.
-  useEffect(() => {
-    const video = videoRef.current
-    if (!video || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const observer = new IntersectionObserver(
-      ([entree]) => {
-        if (entree.isIntersecting) video.play().catch(() => {})
-        else video.pause()
-      },
-      { rootMargin: '300px 0px' },
-    )
-    observer.observe(sectionRef.current)
-
-    return () => observer.disconnect()
-  }, [])
-
   // Sans back-end, la demande part par mail avec les champs pré-remplis.
   const envoyer = (e) => {
     e.preventDefault()
@@ -110,18 +92,12 @@ export default function Contact() {
       className="relative px-4 md:px-12 pt-[10vh] pb-24 overflow-hidden"
       aria-label="Contact"
     >
-      {/* Fond vidéo laissé à pleine opacité : la lisibilité est obtenue par le
-          poids des caractères, leur ombre portée, et les panneaux de verre —
-          jamais par un voile qui éteindrait l'image. */}
-      <video
-        ref={videoRef}
-        src="/contact/contact.mp4"
-        poster="/contact/contact.webp"
-        muted
-        loop
-        playsInline
-        preload="none"
-        aria-hidden="true"
+      {/* Fond photo laissé à pleine opacité : la lisibilité vient du poids des
+          caractères et des panneaux de verre, jamais d'un voile sur l'image. */}
+      <img
+        src="/contact/contact.webp"
+        alt="Artisan reprenant l'enduit d'une maison de village depuis un échafaudage"
+        loading="lazy"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
