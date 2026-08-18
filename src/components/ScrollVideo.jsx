@@ -57,7 +57,7 @@ export default function ScrollVideo({ src, className = '' }) {
     video.addEventListener('seeked', onSeeked)
 
     const trigger = ScrollTrigger.create({
-      trigger: document.documentElement,
+      trigger: '#hero',
       start: 'top top',
       end: 'bottom bottom',
       scrub: true,

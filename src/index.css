@@ -5,6 +5,8 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --font-serif: "Instrument Serif", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
   --font-dirtyline: "Dirtyline36Daysoftype2022", sans-serif;
+  --color-or: #c9a227;
+  --color-or-clair: #e3c667;
   --animate-marquee: marquee 20s linear infinite;
   @keyframes marquee {
     100% { transform: translateX(-50%); }

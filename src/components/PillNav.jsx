@@ -17,9 +17,13 @@ const scrollTo = (target) =>
 
 const NAV_ITEMS = [
   { label: 'Accueil', onClick: () => scrollTo(0) },
-  { label: 'À propos', onClick: () => scrollTo(document.body.scrollHeight) },
-  { label: 'Services', onClick: () => scrollTo(document.body.scrollHeight * 0.6) },
-  { label: 'Contact', onClick: () => scrollTo(document.body.scrollHeight) },
+  // Le panneau « À propos » est révélé tout en bas du hero.
+  {
+    label: 'À propos',
+    onClick: () => scrollTo(document.getElementById('hero').offsetHeight - window.innerHeight),
+  },
+  { label: 'Services', onClick: () => scrollTo('#metiers') },
+  { label: 'Contact', onClick: () => scrollTo('#contact') },
 ]
 
 export default function PillNav() {
