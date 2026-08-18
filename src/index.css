@@ -31,3 +31,20 @@ body {
   background-color: var(--color-fond);
   color: white;
 }
+
+/* Ondes de l'atelier sur la carte : deux cercles décalés dans le temps. */
+.zone-onde {
+  animation: onde 3.4s ease-out infinite;
+}
+.zone-onde-2 {
+  animation-delay: 1.7s;
+}
+
+@keyframes onde {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(4.5); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zone-onde { animation: none; opacity: 0.35; }
+}

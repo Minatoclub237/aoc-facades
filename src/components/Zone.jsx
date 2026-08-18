@@ -18,81 +18,98 @@ const COMMUNES = [
   { nom: 'Montpellier', lat: 43.6119, lon: 3.8772 },
 ]
 
-const ANNEAUX = [15, 30, 60]
-
-// Projection équirectangulaire centrée sur le siège : à cette latitude un degré
-// de longitude vaut cos(lat) degré de latitude, sinon la carte s'étire vers l'est.
+// Distance réelle au siège : projection équirectangulaire, un degré de longitude
+// valant cos(lat) degré de latitude à cette latitude.
 const KM_PAR_DEGRE = 111
-const RAYON_MAX_PX = 240
-const PX_PAR_KM = RAYON_MAX_PX / 68
-const CENTRE = 300
 
-const projeter = (ville) => {
+const distance = (ville) => {
   const dy = (ville.lat - SIEGE.lat) * KM_PAR_DEGRE
   const dx = (ville.lon - SIEGE.lon) * KM_PAR_DEGRE * Math.cos((SIEGE.lat * Math.PI) / 180)
-  return {
-    ...ville,
-    km: Math.round(Math.hypot(dx, dy)),
-    x: CENTRE + dx * PX_PAR_KM,
-    y: CENTRE - dy * PX_PAR_KM,
-  }
+  return Math.round(Math.hypot(dx, dy))
 }
 
-const VILLES = COMMUNES.map(projeter).sort((a, b) => a.km - b.km)
+const VILLES = COMMUNES.map((ville) => ({ ...ville, km: distance(ville) })).sort(
+  (a, b) => a.km - b.km,
+)
+
+// Position de l'atelier sur la carte, en pourcentage du cadre.
+const REPERE = { x: 53.4, y: 71.8 }
+
+// Le relief est reconstruit en CSS : le détourage ne pouvait pas distinguer
+// l'extrusion d'origine du fond gris, tous deux dans les mêmes tons.
+const EPAISSEUR = Array.from({ length: 9 }, (_, i) => i + 1)
+
+const MASQUE = {
+  maskImage: 'url(/zone/france.png)',
+  WebkitMaskImage: 'url(/zone/france.png)',
+  maskSize: 'contain',
+  WebkitMaskSize: 'contain',
+  maskRepeat: 'no-repeat',
+  WebkitMaskRepeat: 'no-repeat',
+  maskPosition: 'center',
+  WebkitMaskPosition: 'center',
+}
 
 /**
- * Carte-radar : les anneaux kilométriques s'ouvrent depuis l'atelier, puis les
- * communes s'allument de la plus proche à la plus lointaine, en même temps que
- * la ligne correspondante de la liste.
+ * La carte de France bascule et dérive au scroll, l'atelier pulse dans l'Hérault,
+ * et la liste des communes se dévoile ligne à ligne, accrochée au défilement.
  */
 export default function Zone() {
   const sectionRef = useRef(null)
+  const carteRef = useRef(null)
   const [allumees, setAllumees] = useState(0)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
+      // Chaque ligne monte derrière son masque, au rythme du scroll : le mouvement
+      // est continu et réversible, pas un fondu déclenché une seule fois.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 80%',
-          // Distance fixe plutôt que « bottom bottom » : la zone est la dernière
-          // section, le bas de page n'est atteint qu'à l'extrême fin du scroll et
-          // la dernière commune ne s'allumait jamais.
-          end: '+=70%',
-          scrub: 1.2,
+          start: 'top 78%',
+          end: '+=85%',
+          scrub: 1.1,
         },
       })
 
-      gsap.utils.toArray('.zone-anneau', sectionRef.current).forEach((anneau, i) => {
+      gsap.utils.toArray('.zone-ligne', sectionRef.current).forEach((ligne, i) => {
         tl.fromTo(
-          anneau,
-          { scale: 0.2, opacity: 0 },
-          { scale: 1, opacity: 1, ease: 'power2.out', duration: 0.5 },
+          ligne,
+          { yPercent: 130, opacity: 0 },
+          { yPercent: 0, opacity: 1, ease: 'power2.out', duration: 0.5 },
           i * 0.18,
         )
       })
 
-      VILLES.forEach((ville, i) => {
-        tl.fromTo(
-          sectionRef.current.querySelectorAll('[data-ville="' + ville.nom + '"]'),
-          { opacity: 0, y: 8 },
-          { opacity: 1, y: 0, ease: 'power2.out', duration: 0.35 },
-          0.9 + i * 0.16,
-        )
-      })
-
-      // Compteur piloté par un tween proxy : une callback par ville manquait la
-      // dernière commune quand le scrub s'arrêtait juste avant la fin.
       const compteur = { valeur: 0 }
       tl.to(
         compteur,
         {
           valeur: VILLES.length,
           ease: 'none',
-          duration: (VILLES.length - 1) * 0.16 + 0.35,
+          duration: (VILLES.length - 1) * 0.18 + 0.5,
           onUpdate: () => setAllumees(Math.round(compteur.valeur)),
         },
-        0.9,
+        0,
+      )
+
+      // La carte entre de plus loin et continue de dériver après la liste.
+      gsap.fromTo(
+        carteRef.current,
+        { yPercent: 12, rotationX: 16, rotationZ: -5, scale: 0.93 },
+        {
+          yPercent: -10,
+          rotationX: -6,
+          rotationZ: 3,
+          scale: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.4,
+          },
+        },
       )
     }, sectionRef)
 
@@ -103,10 +120,10 @@ export default function Zone() {
     <section
       id="zone"
       ref={sectionRef}
-      className="relative px-6 md:px-12 py-[14vh]"
+      className="relative px-6 md:px-12 py-[14vh] overflow-hidden"
       aria-label="Zone d'intervention"
     >
-      <div className="max-w-[1250px] mx-auto grid gap-14 lg:grid-cols-2 lg:items-center">
+      <div className="max-w-[1250px] mx-auto grid gap-16 lg:grid-cols-2 lg:items-center">
         <div>
           <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-4">
             Zone d'intervention
@@ -127,113 +144,72 @@ export default function Zone() {
             </span>
           </div>
 
-          <ul className="font-sans text-sm divide-y divide-white/10 border-y border-white/10">
+          <ul className="font-sans text-sm border-t border-white/10">
             {VILLES.map((ville) => (
-              <li
-                key={ville.nom}
-                data-ville={ville.nom}
-                className="flex items-baseline justify-between py-2.5 text-white"
-                style={{ opacity: 0 }}
-              >
-                <span>{ville.nom}</span>
-                <span className="text-or">{ville.km} km</span>
+              <li key={ville.nom} className="overflow-hidden border-b border-white/10">
+                <span className="zone-ligne flex items-baseline justify-between py-2.5 text-white">
+                  {ville.nom}
+                  <span className="text-or">{ville.km} km</span>
+                </span>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="relative">
-          <svg
-            viewBox="0 0 600 600"
-            className="w-full h-auto"
-            role="img"
-            aria-label="Carte des communes desservies autour de Lignan-sur-Orb"
+        <div className="relative" style={{ perspective: '1200px' }}>
+          <div
+            ref={carteRef}
+            className="relative w-full aspect-[894/828]"
+            style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
           >
-            <defs>
-              <radialGradient id="zoneCoeur">
-                <stop offset="0%" stopColor="var(--color-surface)" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="var(--color-surface)" stopOpacity="0" />
-              </radialGradient>
-            </defs>
-
-            <circle cx={CENTRE} cy={CENTRE} r="160" fill="url(#zoneCoeur)" />
-
-            {ANNEAUX.map((km) => (
-              <g
-                key={km}
-                className="zone-anneau"
-                style={{ transformOrigin: CENTRE + 'px ' + CENTRE + 'px' }}
-              >
-                <circle
-                  cx={CENTRE}
-                  cy={CENTRE}
-                  r={km * PX_PAR_KM}
-                  fill="none"
-                  stroke="var(--color-or)"
-                  strokeOpacity="0.3"
-                  strokeWidth="1"
-                  strokeDasharray="4 8"
-                />
-                <text
-                  x={CENTRE + 8}
-                  y={CENTRE - km * PX_PAR_KM - 8}
-                  fill="var(--color-or)"
-                  fillOpacity="0.6"
-                  fontFamily="Manrope, sans-serif"
-                  fontSize="12"
-                  letterSpacing="1"
-                >
-                  {km} km
-                </text>
-              </g>
+            {/* Relief : des copies décalées du même masque, de la plus profonde à la plus proche. */}
+            {EPAISSEUR.map((n) => (
+              <span
+                key={n}
+                className="absolute inset-0"
+                style={{
+                  ...MASQUE,
+                  transform: 'translate(' + n * -1.1 + 'px, ' + n * 2.2 + 'px)',
+                  backgroundColor: n > 6 ? '#33261a' : '#6b5423',
+                  opacity: 0.92 - n * 0.05,
+                }}
+                aria-hidden="true"
+              />
             ))}
 
-            {VILLES.map((ville) => {
-              const aDroite = ville.x >= CENTRE
-              return (
-                <g key={ville.nom} data-ville={ville.nom} style={{ opacity: 0 }}>
-                  <line
-                    x1={CENTRE}
-                    y1={CENTRE}
-                    x2={ville.x}
-                    y2={ville.y}
-                    stroke="var(--color-or)"
-                    strokeOpacity="0.18"
-                    strokeWidth="1"
-                  />
-                  <circle cx={ville.x} cy={ville.y} r="4.5" fill="var(--color-or)" />
-                  <text
-                    x={ville.x + (aDroite ? 12 : -12)}
-                    y={ville.y + 4}
-                    textAnchor={aDroite ? 'start' : 'end'}
-                    fill="#ffffff"
-                    fontFamily="Manrope, sans-serif"
-                    fontSize="15"
-                    fontWeight="600"
-                  >
-                    {ville.nom}
-                  </text>
-                </g>
-              )
-            })}
+            {/* Face supérieure */}
+            <span
+              className="absolute inset-0"
+              style={{
+                ...MASQUE,
+                background: 'linear-gradient(150deg, #f3ece0 0%, #ded2bd 55%, #c1b298 100%)',
+              }}
+              role="img"
+              aria-label="Carte de France : l'atelier est situé dans l'Hérault"
+            />
 
-            <g>
-              <circle cx={CENTRE} cy={CENTRE} r="14" fill="var(--color-or)" fillOpacity="0.25" />
-              <circle cx={CENTRE} cy={CENTRE} r="6" fill="var(--color-or)" />
-              <text
-                x={CENTRE - 20}
-                y={CENTRE - 20}
-                textAnchor="end"
-                fill="var(--color-or)"
-                fontFamily="Manrope, sans-serif"
-                fontSize="13"
-                fontWeight="600"
-                letterSpacing="2"
-              >
-                L&apos;ATELIER
-              </text>
-            </g>
-          </svg>
+            {/* L'atelier */}
+            <span
+              className="absolute"
+              style={{ left: REPERE.x + '%', top: REPERE.y + '%' }}
+              aria-hidden="true"
+            >
+              <span className="zone-onde absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 block w-5 h-5 rounded-full border border-or" />
+              <span className="zone-onde zone-onde-2 absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 block w-5 h-5 rounded-full border border-or" />
+              <span
+                className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2 block w-3 h-3 rounded-full bg-or"
+                style={{ boxShadow: '0 0 18px rgba(201,162,39,0.9)' }}
+              />
+              {/* Le libellé passe sur l'ivoire de la carte : il lui faut son propre fond. */}
+              <span className="absolute left-5 -top-3 whitespace-nowrap font-sans text-[11px] tracking-[0.2em] uppercase text-or bg-fond/85 backdrop-blur-sm px-2.5 py-1 rounded-full border border-or/30">
+                Lignan-sur-Orb
+              </span>
+            </span>
+          </div>
+
+          <p className="mt-8 font-sans text-white/40 text-xs md:text-sm text-center lg:text-left">
+            Hérault et Aude — de Montpellier à Narbonne.
+          </p>
         </div>
       </div>
     </section>
