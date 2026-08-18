@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+import { scrollTo } from '../smoothScroll'
 import './PillNav.css'
-
-gsap.registerPlugin(ScrollToPlugin)
 
 const LOGO_PATHS = [
   'm50,50c0,18.2,14.77,32.98,32.97,32.98,0-18.2-14.77-32.98-32.97-32.98Z',
@@ -11,9 +9,6 @@ const LOGO_PATHS = [
   'm82.98,17.02c-18.2,0-32.97,14.77-32.97,32.97,18.2,0,32.97-14.77,32.97-32.97Z',
   'm17.02,17.02c0,18.2,14.77,32.97,32.98,32.97,0-18.2-14.77-32.97-32.98-32.97Z',
 ]
-
-const scrollTo = (target) =>
-  gsap.to(window, { duration: 3, scrollTo: target, ease: 'power3.inOut' })
 
 const NAV_ITEMS = [
   { label: 'Accueil', onClick: () => scrollTo(0) },
@@ -23,7 +18,8 @@ const NAV_ITEMS = [
     onClick: () => scrollTo(document.getElementById('hero').offsetHeight - window.innerHeight),
   },
   { label: 'Services', onClick: () => scrollTo('#metiers') },
-  { label: 'Chantiers', onClick: () => scrollTo('#chantiers') },
+  { label: 'Réalisations', onClick: () => scrollTo('#realisations') },
+  { label: 'Contact', onClick: () => scrollTo('#contact') },
 ]
 
 export default function PillNav() {
