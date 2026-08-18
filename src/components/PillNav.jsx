@@ -23,7 +23,7 @@ const NAV_ITEMS = [
     onClick: () => scrollTo(document.getElementById('hero').offsetHeight - window.innerHeight),
   },
   { label: 'Services', onClick: () => scrollTo('#metiers') },
-  { label: 'Contact', onClick: () => scrollTo('#contact') },
+  { label: 'Chantiers', onClick: () => scrollTo('#chantiers') },
 ]
 
 export default function PillNav() {

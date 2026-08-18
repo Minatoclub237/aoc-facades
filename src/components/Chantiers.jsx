@@ -69,7 +69,7 @@ export default function Chantiers() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative h-screen overflow-hidden" aria-label="Types de chantiers">
+    <section id="chantiers" ref={sectionRef} className="relative h-screen overflow-hidden" aria-label="Types de chantiers">
       <div className="absolute top-[10vh] left-0 w-full px-6 md:px-12 z-10 pointer-events-none">
         <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-3">
           Nos chantiers
@@ -87,7 +87,7 @@ export default function Chantiers() {
           >
             <span
               className="chantier-chiffre absolute inset-0 flex items-center justify-center font-dirtyline leading-none select-none pointer-events-none"
-              style={{ fontSize: 'clamp(14rem, 42vw, 640px)', color: 'transparent', WebkitTextStroke: '1px rgba(201,162,39,0.35)' }}
+              style={{ fontSize: 'clamp(14rem, 42vw, 640px)', color: 'transparent', WebkitTextStroke: '1px rgba(201,162,39,0.45)' }}
               aria-hidden="true"
             >
               {i + 1}

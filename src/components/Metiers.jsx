@@ -105,6 +105,11 @@ export default function Metiers() {
 
   return (
     <section id="metiers" ref={sectionRef} className="relative md:h-screen overflow-hidden py-24 md:py-0" aria-label="Nos activités">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{ background: 'radial-gradient(ellipse 70% 55% at 50% 55%, var(--color-fond-clair), transparent 70%)' }}
+        aria-hidden="true"
+      />
       <div className="relative md:absolute md:top-[12vh] left-0 w-full px-6 md:px-12 text-center z-10">
         <p className="font-sans uppercase tracking-[0.35em] text-xs md:text-sm text-or mb-4">
           Nos activités
@@ -124,8 +129,8 @@ export default function Metiers() {
             <article
               key={metier.titre}
               ref={(el) => (cardsRef.current[i] = el)}
-              className="metier-carte relative md:absolute md:left-1/2 md:top-1/2 w-[min(300px,84vw)] md:w-[260px] h-auto md:h-[380px] rounded-2xl border border-or/30 bg-black/70 backdrop-blur-xl p-6 md:p-7 flex flex-col justify-between gap-10 md:gap-0"
-              style={{ boxShadow: '0 30px 80px rgba(0,0,0,0.6)' }}
+              className="metier-carte relative md:absolute md:left-1/2 md:top-1/2 w-[min(300px,84vw)] md:w-[260px] h-auto md:h-[380px] rounded-2xl border border-or/25 bg-surface/20 backdrop-blur-xl p-6 md:p-7 flex flex-col justify-between gap-10 md:gap-0"
+              style={{ boxShadow: '0 30px 80px rgba(20, 14, 10, 0.55)' }}
             >
               <span className="font-serif text-or text-2xl md:text-3xl">
                 {String(i + 1).padStart(2, '0')}

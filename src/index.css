@@ -7,6 +7,11 @@
   --font-dirtyline: "Dirtyline36Daysoftype2022", sans-serif;
   --color-or: #c9a227;
   --color-or-clair: #e3c667;
+  /* Teinte relevée au pixel sur le panneau « À propos » (#795f4f), déclinée en
+     valeurs sombres pour que l'or garde son contraste sur le fond. */
+  --color-fond: #241c16;
+  --color-fond-clair: #3b2e24;
+  --color-surface: #795f4f;
   --animate-marquee: marquee 20s linear infinite;
   @keyframes marquee {
     100% { transform: translateX(-50%); }
@@ -23,6 +28,6 @@
 }
 
 body {
-  background-color: black;
+  background-color: var(--color-fond);
   color: white;
 }

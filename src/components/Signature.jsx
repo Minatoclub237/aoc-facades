@@ -64,7 +64,7 @@ export default function Signature() {
     >
       <div
         ref={bandTopRef}
-        className="font-dirtyline whitespace-nowrap leading-none text-white/12 select-none"
+        className="font-dirtyline whitespace-nowrap leading-none text-white/[0.09] select-none"
         style={{ fontSize: 'clamp(5rem, 17vw, 300px)' }}
         aria-hidden="true"
       >
@@ -87,7 +87,7 @@ export default function Signature() {
 
       <div
         ref={bandBottomRef}
-        className="font-dirtyline whitespace-nowrap leading-none text-white/12 select-none text-right"
+        className="font-dirtyline whitespace-nowrap leading-none text-white/[0.09] select-none text-right"
         style={{ fontSize: 'clamp(5rem, 17vw, 300px)' }}
         aria-hidden="true"
       >
